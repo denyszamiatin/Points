@@ -12,21 +12,24 @@ Quote:
     Function for making changes in field.
     It's created for future development. For now it's doing nothing.
     It just take the list and return it back without changes'''
+import string
+
+from generate_field import generate_field, FIELD_WIDTH, FIELD_HEIGHT
 
 
-from generate_field import (generate_field, create_list_alphabet,
-                            generate_dig_list, FIELD_WIDTH)
+def create_list_alphabet():
+    '''Creates a list of letter in alphabetical.'''
+    return list(string.ascii_uppercase)
 
 
-def get_vertical_sign_length(digit_list):
-    return len(str(digit_list[-1]))
+def get_vertical_sign_length():
+    return len(str(FIELD_HEIGHT + 1))
 
 
 def output_field(field):
-    output_width = get_vertical_sign_length(generate_dig_list()) + \
-                   FIELD_WIDTH * 2
+    output_width = get_vertical_sign_length() + FIELD_WIDTH * 2
     print(' '.join(create_list_alphabet()[:FIELD_WIDTH]).rjust(output_width))
-    for num, row in zip(generate_dig_list(), field):
+    for num, row in enumerate(field, 1):
         print(' '.join(str(i) for i in [num] + row).rjust(output_width))
 
 

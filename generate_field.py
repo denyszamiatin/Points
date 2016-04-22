@@ -12,7 +12,6 @@ Tips for future:
 - can to add set_defaults function to put there symbols that will fill field,
 maybe var with dimension of field
 '''
-import string
 FIELD_WIDTH = 10
 FIELD_HEIGHT = 10
 
@@ -23,11 +22,4 @@ def generate_field(x=FIELD_WIDTH, y=FIELD_HEIGHT):
     return [[0 for _i in range(x)] for _j in range(y)]
 
 
-def create_list_alphabet():
-    '''Creates a list of letter in alphabetical.'''
-    return list(string.ascii_uppercase)
 
-
-def generate_dig_list(x=FIELD_HEIGHT):
-    '''Generate list'''
-    return list(range(1, x + 1))
