@@ -5,7 +5,7 @@ make doc test
 '''
 import string
 from generate_field import generate_field
-from display_field import output_field
+from display_field import output_field, create_list_alphabet
 
 field = generate_field()
 
@@ -16,21 +16,14 @@ def make_dict():
     Using for translation letters into digits
     :return:
     '''
-    key = list(string.ascii_uppercase)
-    value = [i for i in range(0, 25)]
-    dict = {}
-    for i, j in zip(key, value):
-        dict[i] = j
-    return dict
+    return {letter: i for i, letter in enumerate(create_list_alphabet())}
 
 
-def check_position(x, y):
-    l = field
-    if l[y][dict[x]] != 0:
-        print("Position already occupied")
+def is_free(x, y):
+    return not field[y][dict[x]]
 
 
-def check_around(y, x):
+def check_around(y, x, marker=1):
     '''
     Check position for similar marker in position around,
     if marker the same = append position to the same_dots list
@@ -38,15 +31,24 @@ def check_around(y, x):
     :param y:
     :return:
     '''
-    list_yx = [[0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1, 1]]
-    marker = 1
-    same_dots = []
-    for i in list_yx:
-        if field[y + i[0]][x + i[1]] == marker:
-            same_dots.append([y + i[0], x + i[1]])
+    list_yx = ((0, 1), (-1, 1), (-1, 0), (-1, -1),
+               (0, -1), (1, -1), (1, 0), (1, 1))
+
+    same_dots = [
+        (y + y_offset, x + x_offset)
+         for y_offset, x_offset in list_yx
+         if field[y + y_offset][x + x_offset] == marker
+    ]
     return same_dots
 
-def create_path(y, x, path = [], a = 0, b = 0):
+
+def remove_previous_position(dots, prev_pos):
+    if prev_pos in dots:
+        dots.remove(prev_pos)
+    return dots
+
+
+def create_path(y, x, path, a=0, b=0):
     '''
     Function use check_around() func that:
     looking for points that surround start point in hop equal 1
@@ -61,24 +63,21 @@ def create_path(y, x, path = [], a = 0, b = 0):
     from new search.
     :return: created path.
     '''
-    if [y, x] in path:
-        print(path)
-        print("Closed!")
+    if (y, x) in path:
         return path
-    dots_around = check_around(y, x)
-    if [a, b] in dots_around:
-        dots_around.remove([a, b])
+    dots_around = remove_previous_position(check_around(y, x), a, b)
     a, b = y, x
-    if dots_around != []:
-        path.append([y, x])
-        for i in dots_around:
-            create_path(i[0], i[1], path, a, b)
-    elif dots_around == []:
-        print("There is no dots around.")
-        path.clear()
-    else:
-        print("You SHALL NOT PASS!!!")
+    if dots_around:
+        for y_p, x_p in dots_around:
+            create_path(y_p, x_p, path + [(y, x)], a, b)
 
+
+def set_dot(x, y, marker):
+    if not is_free(y, x):
+        print("Position is already occupied")
+        return False
+    field[y][x] = marker
+    return True
 
 
 def install_dot(marker):
@@ -88,19 +87,14 @@ def install_dot(marker):
     :param marker: set a marker param you want to display
     :return:
     '''
-    l = field
-    dict = make_dict()
     while True:
         x, y = take_input()
-        x = dict[x]
-        if l[y][x] != 0:
-            print("Position is already occupied")
+        x = make_dict()[x]
+        if not set_dot(x, y, marker):
             continue
-        else:
-            l[y][x] = marker
         create_path(y, x)
         print("After create_path")
-        return l
+        return field
 
 
 def take_input():
