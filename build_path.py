@@ -106,6 +106,7 @@ def take_input():
     input_x = input("x?").upper()
     return input_x, input_y
 
+# Test commit
 
 field[2][1] = 1
 field[3][1] = 1
